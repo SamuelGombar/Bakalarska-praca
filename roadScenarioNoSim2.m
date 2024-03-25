@@ -3,7 +3,7 @@ close all;
 clear;
 clc;
 
-maxGen = 50;
+maxGen = 100;
 popSize = 20;
 numberOfGenes = 190;
 paramInterval = [ones(1,numberOfGenes)*-3; ones(1,numberOfGenes)*3];
@@ -34,7 +34,6 @@ for gen = 1:maxGen
     pop = muta(pop, 0.1, amp, paramInterval);
     pop = crossov(pop, 2, 0);
     pop = [best;pop];
-
     if gen == 15
         W1_15 = [oldPop(i,1:1:10); oldPop(i,11:1:20); oldPop(i,21:1:30); oldPop(i,31:1:40); oldPop(i, 41:1:50)];
         W2_15 = [oldPop(i,51); oldPop(i,52); oldPop(i,53); oldPop(i,54); oldPop(i,55); oldPop(i,56); oldPop(i,57); oldPop(i,58); oldPop(i,59); oldPop(i,60)];
