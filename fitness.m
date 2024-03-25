@@ -21,23 +21,26 @@ function fit = fitness(pop)
     
         %v = 0.4;
         
-        theta = theta + d;
-        dx = v*cosd(theta);
-        dy = v*sind(theta);
-        v1.Yaw = theta;
-        v1.Position = v1.Position + [dx, dy, 0];
-        frontAxle = [v1.Position(1) + 2.525*cosd(theta) v1.Position(2) + 2.525*sind(theta)]; %vektor obsahujuci x y front axle
+        dx = v*cos(theta + Beta(L, d));
+        dy = v*sin(theta + Beta(L, d));
+        thetad = (v/(L/2))*sin(Beta(L, d));
+        theta = theta + thetad;
+%     v1.Yaw = theta
+        degrees = theta * (180/pi);
+        v1.Yaw = degrees;
+        v1.Position = v1.Position + [dx, dy, 0];       %1.175 - tretia tretina auta, teda predok
+        frontAxle = [v1.Position(1) + 1.175*cos(theta) v1.Position(2) + 1.175*sin(theta)]; %vektor obsahujuci x y front axle
 
-        tipOfSensor1 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(sensorFov/2+theta)...
-            v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(sensorFov/2+theta)];
-        tipOfSensor2 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(sensorFov/4+theta)...
-            v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(sensorFov/4+theta)];
-        tipOfSensor3 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(-sensorFov/4+theta)...
-            v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(-sensorFov/4+theta)];
-        tipOfSensor4 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(-sensorFov/2+theta)...
-            v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(-sensorFov/2+theta)];
-        tipOfSensor5 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(theta)...
-            v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(theta)];
+        tipOfSensor1 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/2+theta)...
+            v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/2+theta)];
+        tipOfSensor2 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/4+theta)...
+            v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/4+theta)];
+        tipOfSensor3 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/4+theta)...
+            v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/4+theta)];
+        tipOfSensor4 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/2+theta)...
+            v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/2+theta)];
+        tipOfSensor5 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(theta)...
+            v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(theta)];
     
         
     
@@ -119,10 +122,10 @@ function fit = fitness(pop)
             end
     
             %collision
-            xA = v1.Position(1) - cosd(theta);
-            yA = v1.Position(2) - sind(theta);
-            xB = v1.Position(1) + 2.525*cosd(theta);
-            yB = v1.Position(2) + 2.525*sind(theta);
+            xA = v1.Position(1) - cos(theta);
+            yA = v1.Position(2) - sin(theta);
+            xB = v1.Position(1) + 1.175*cos(theta);
+            yB = v1.Position(2) + 1.175*sin(theta);
 %             A = [xA yA];
 %             B = [xB yB];
             n6 = (p4-p3)*(q3-yA)-(q4-q3)*(p3-xA);
@@ -135,10 +138,10 @@ function fit = fitness(pop)
                 break        %POZOR SI PRIDAL BREAK
             end
     
-            xA1 = v1.Position(1) + 2.525*cosd(theta) - sind(theta);
-            yA1 = v1.Position(2) + cosd(theta) + 2.525*sind(theta);
-            xB1 = v1.Position(1) + 2.525*cosd(theta) + sind(theta);
-            yB1 = v1.Position(2) - cosd(theta) + 2.525*sind(theta);
+            xA1 = v1.Position(1) + 1.175*cos(theta) - sin(theta);
+            yA1 = v1.Position(2) + cos(theta) + 1.175*sin(theta);
+            xB1 = v1.Position(1) + 1.175*cos(theta) + sin(theta);
+            yB1 = v1.Position(2) - cos(theta) + 1.175*sin(theta);
 %             D1 = [xA1 yA1];
 %             E1 = [xB1 yB1];
             n7 = (p4-p3)*(q3-yA1)-(q4-q3)*(p3-xA1);
@@ -159,14 +162,15 @@ function fit = fitness(pop)
         z2 = tanh(a2);
         a3 = z2*W3;
         z3 = tanh(a3);
-        d = 4*z3(1);
+        d = z3(1)/3;
         v = 0.5*z3(2);
 %         if z3 < 0
 %             v = 0.5*(-z3(2));
 %         else
 %             v = 0.5*z3(2);
 %         end
-        %% FINISH
+        %% FIT & FINISH
+        fit = fit - v*100;
 %      stupnovita
         if (isCollision) 
             fit = fit + 100000 - 5*programStep;

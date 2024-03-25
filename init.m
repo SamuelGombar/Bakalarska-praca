@@ -6,6 +6,7 @@ road(scenario, roadCenters, roadWidth);
 
 %% Actor
 v1 = vehicle(scenario, 'ClassID',1', 'Position',[0 0 0], 'Velocity',[0.1 -0.5 0], 'Yaw',0);
+v1.RearOverhang = 2.35;
 
 %% Boundaries
 rb = roadBoundaries(scenario);

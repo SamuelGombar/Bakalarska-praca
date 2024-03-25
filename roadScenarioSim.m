@@ -12,6 +12,7 @@ road(scenario, roadCenters, roadWidth);
 %% Actor
 %global v1;
 v1 = vehicle(scenario, 'ClassID',1', 'Position',[0 0 0], 'Velocity',[0.1 -0.5 0], 'Yaw', 0);
+v1.RearOverhang = 2.35;
 
 %% Actor trajectory
 %smoothTrajectory(v1, roadCenters, 30);
@@ -77,7 +78,7 @@ end
 
 %% Radars
 sensorLength = 15;
-sensorFov = 150; %120
+sensorFov = 5*pi/6;
 
 %% Simulation
 %chasePlot(v1);
@@ -96,23 +97,6 @@ collision = 0;
 isCollision = false;
 fit = 0;
 v = 0.4;
-
-% W1 = [1.42053275704998	0	0	0	2.82273839659347	1.39611450563047	0	0	0.164328629126929	0.421784734719740;
-% 0.180075371614642	0	0	0.0251455742637711	0	0	-0.173550710910864	0	1.12811662544634	-2.57589155875530;
-% 0.0965074407146875	0	-0.0334049876669244	-0.964555699454877	0	0	2.59744384283603	1.10548979374923	0.0272520357443355	0;
-% 0	0.0607598468838893	2.34886967269468	0.0674745322776953	-0.0398951218171272	-0.130848671179621	-0.125398181308082	0.196121410296021	0	0;
-% -0.120344364352198	0	0	-0.0568003259252721	0	-0.796632863598674	-2.40136866320584	0	0	-0.0142300149695201];
-% W2 = [2.96568364894325;
-% 0;
-% 1.16576351468166;
-% 0.402412097465456;
-% 0;
-% 0;
-% 0.0763015253695604;
-% 0.550150463286649;
-% -2.67046735214677;
-% -2.86923126632653];
-% B1 = [0.0988923079470109	0	0	-0.0989493899599085	0	0.139760348807316	-0.155800383459997	0	-0.183885628822422	2.32857054705212];
 W1 = bestW1;%W1_50;
 B1 = bestB1;%B1_50;
 W2 = bestW2;%W2_50;
@@ -125,23 +109,26 @@ while advance(scenario)
     programStep = programStep + 1;
 
     %v = 0.4; %0.2
-    theta = theta + d;
-    dx = v*cosd(theta);
-    dy = v*sind(theta);
-    v1.Yaw = theta;
+    dx = v*cos(theta + Beta(L, d));
+    dy = v*sin(theta + Beta(L, d));
+    thetad = (v/(L/2))*sin(Beta(L, d));
+    theta = theta + thetad;
+%     v1.Yaw = theta
+    degrees = theta * (180/pi);
+    v1.Yaw = degrees;
     v1.Position = v1.Position + [dx, dy, 0];
-    frontAxle = [v1.Position(1) + 2.525*cosd(theta) v1.Position(2) + 2.525*sind(theta)]; %vektor obsahujuci x y front axle
+    frontAxle = [v1.Position(1) + 1.175*cos(theta) v1.Position(2) + 1.175*sin(theta)]; %vektor obsahujuci x y front axle
 
-    tipOfSensor1 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(sensorFov/2+theta)...
-        v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(sensorFov/2+theta)];
-    tipOfSensor2 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(sensorFov/4+theta)...
-        v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(sensorFov/4+theta)];
-    tipOfSensor3 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(-sensorFov/4+theta)...
-        v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(-sensorFov/4+theta)];
-    tipOfSensor4 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(-sensorFov/2+theta)...
-        v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(-sensorFov/2+theta)];
-    tipOfSensor5 = [v1.Position(1) + 2.525*cosd(theta) + sensorLength*cosd(theta)...
-    v1.Position(2) + 2.525*sind(theta) + sensorLength*sind(theta)];
+    tipOfSensor1 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/2+theta)...
+        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/2+theta)];
+    tipOfSensor2 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/4+theta)...
+        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/4+theta)];
+    tipOfSensor3 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/4+theta)...
+        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/4+theta)];
+    tipOfSensor4 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/2+theta)...
+        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/2+theta)];
+    tipOfSensor5 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(theta)...
+    v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(theta)];
     
 
     alpha = [0 0 0 0 0];
@@ -222,10 +209,10 @@ while advance(scenario)
         end
 
         %collision
-        xA = v1.Position(1) - cosd(theta);
-        yA = v1.Position(2) - sind(theta);
-        xB = v1.Position(1) + 2.525*cosd(theta);
-        yB = v1.Position(2) + 2.525*sind(theta);
+        xA = v1.Position(1) - cos(theta);
+        yA = v1.Position(2) - sin(theta);
+        xB = v1.Position(1) + 1.175*cos(theta);
+        yB = v1.Position(2) + 1.175*sin(theta);
         A = [xA yA];
         B = [xB yB];
         n6 = (p4-p3)*(q3-yA)-(q4-q3)*(p3-xA);
@@ -237,10 +224,10 @@ while advance(scenario)
             isCollision = true;
             plot([A(1) B(1)], [A(2), B(2)], 'Color', 'blue');
         end
-        xA1 = v1.Position(1) + 2.525*cosd(theta) - sind(theta);
-        yA1 = v1.Position(2) + cosd(theta) + 2.525*sind(theta);
-        xB1 = v1.Position(1) + 2.525*cosd(theta) + sind(theta);
-        yB1 = v1.Position(2) - cosd(theta) + 2.525*sind(theta);
+        xA1 = v1.Position(1) + 1.175*cos(theta) - sin(theta);
+        yA1 = v1.Position(2) + cos(theta) + 1.175*sin(theta);
+        xB1 = v1.Position(1) + 1.175*cos(theta) + sin(theta);
+        yB1 = v1.Position(2) - cos(theta) + 1.175*sin(theta);
         D1 = [xA1 yA1];
         E1 = [xB1 yB1];
         n7 = (p4-p3)*(q3-yA1)-(q4-q3)*(p3-xA1);
@@ -272,21 +259,30 @@ while advance(scenario)
     z2 = tanh(a2);
     a3 = z2*W3;
     z3 = tanh(a3);
-    d = 4*z3(1);
+    d = z3(1)/3;
     v = 0.5*z3(2);
-    v 
     
 
-    %% FINISH
-    if (isCollision) 
-        return
-    end
-    if (programStep > 1000)
-        return
-    end
-    if (((v1.Position(1) >= 100) && (v1.Position(1) <= 104)))
-        if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85))
-            return
+     %% FIT & FINISH
+        fit = fit - v*100
+%      stupnovita
+        if (isCollision) 
+            fit = fit + 100000 - 3*programStep;
+            break
         end
-    end
+        %priamo umerna
+%         if (programStep > 300) 
+%             fit = fit + programStep;
+%         end
+        %mrtva pokuta
+        if (programStep > 1000) 
+            fit = fit + 1000000;
+            break
+       end
+        if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
+            if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85)) 
+                fit = fit + programStep;
+                break
+            end
+        end
 end
