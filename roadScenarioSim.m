@@ -78,7 +78,7 @@ end
 
 %% Radars
 sensorLength = 15;
-sensorFov = 5*pi/6;
+sensorFov = 5*pi/6; %5*pi/6;
 
 %% Simulation
 %chasePlot(v1);
@@ -90,13 +90,16 @@ sensorFov = 5*pi/6;
 
 L = 4.7;
 
+incrementd = 0;
 theta = 0;
 d = 0;
 programStep = 0;
 collision = 0;
 isCollision = false;
+turningMax = 0.33;
+maxSpeed = 0.45;
 fit = 0;
-v = 0.4;
+v = 0;
 W1 = bestW1;%W1_50;
 B1 = bestB1;%B1_50;
 W2 = bestW2;%W2_50;
@@ -259,15 +262,29 @@ while advance(scenario)
     z2 = tanh(a2);
     a3 = z2*W3;
     z3 = tanh(a3);
-    d = z3(1)/3;
-    v = 0.5*z3(2);
+    incrementd = z3(1)/13; %0.3
+    d = d + incrementd
+    incrementv = z3(2)/10; %/0.5
+    v = v + incrementv;
+
+    if d > turningMax
+        d = turningMax;
+    elseif d < -turningMax
+        d = -turningMax;
+    end
+
+    if v > maxSpeed
+        v = maxSpeed;
+    elseif v < -maxSpeed
+        v = -maxSpeed;
+    end
     
 
      %% FIT & FINISH
-        fit = fit - v*100
+        fit = fit - v*500;
 %      stupnovita
         if (isCollision) 
-            fit = fit + 100000 - 3*programStep;
+            fit = fit + 100000 - 5*programStep
             break
         end
         %priamo umerna
@@ -276,12 +293,12 @@ while advance(scenario)
 %         end
         %mrtva pokuta
         if (programStep > 1000) 
-            fit = fit + 1000000;
+            fit = fit + 1000000
             break
        end
         if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
             if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85)) 
-                fit = fit + programStep;
+                fit = fit + programStep
                 break
             end
         end

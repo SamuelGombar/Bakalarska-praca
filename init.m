@@ -18,7 +18,7 @@ outerBoundary(3,1) = -50;
 
 %% Radars
 sensorLength = 15;
-sensorFov = 5*pi/6;
+sensorFov = 5*pi/6; %5*pi/6;
 
 %% Simulation
 %REAL LENGTH IS 4.7, WIDTH IS 1.8

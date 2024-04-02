@@ -23,17 +23,19 @@ for gen = 1:maxGen
     
     %% GENETIC ALGORITHM
     [v, i] = min(fit);
+    min(fit)
     evo(gen) = v;
     oldPop = pop;
 
     best = selbest(pop, fit, 1);
-    best1 = selbest(pop, fit, [2 2 1]); %5
-    rand = selrand(pop, fit, 14); %14
+    best1 = selbest(pop, fit, [1 1 1 1]); %5
+    rand = selrand(pop, fit, 15); %14
     pop = [rand; best1];
     pop = mutx(pop, 0.1, paramInterval);
     pop = muta(pop, 0.1, amp, paramInterval);
     pop = crossov(pop, 2, 0);
     pop = [best;pop];
+
     if gen == 15
         W1_15 = [oldPop(i,1:1:10); oldPop(i,11:1:20); oldPop(i,21:1:30); oldPop(i,31:1:40); oldPop(i, 41:1:50)];
         W2_15 = [oldPop(i,51); oldPop(i,52); oldPop(i,53); oldPop(i,54); oldPop(i,55); oldPop(i,56); oldPop(i,57); oldPop(i,58); oldPop(i,59); oldPop(i,60)];

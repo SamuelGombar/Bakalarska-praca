@@ -9,9 +9,12 @@ function fit = fitness(pop)
     B2 = pop(161:1:170);
     W3 = [pop(171:1:180)' pop(181:1:190)'];
 
+    turningMax = 0.33;
+    maxSpeed = 0.45;
+    incrementd = 0;
     theta = 0;
     d = 0;
-    v = 0.4;
+    v = 0;
     programStep = 0;
     isCollision = false;
     
@@ -162,15 +165,32 @@ function fit = fitness(pop)
         z2 = tanh(a2);
         a3 = z2*W3;
         z3 = tanh(a3);
-        d = z3(1)/3;
-        v = 0.5*z3(2);
+        incrementd = z3(1)/13;
+        d = d + incrementd;
+        incrementv = z3(2)/10;
+        v = v + incrementv;
+
+        if d > turningMax
+            d = turningMax;
+        elseif d < -turningMax
+            d = -turningMax;
+        end
+
+        if v > maxSpeed
+            v = maxSpeed;
+        elseif v < -maxSpeed
+            v = -maxSpeed;
+        end
+
+
+
 %         if z3 < 0
 %             v = 0.5*(-z3(2));
 %         else
 %             v = 0.5*z3(2);
 %         end
         %% FIT & FINISH
-        fit = fit - v*100;
+        fit = fit - v*500;
 %      stupnovita
         if (isCollision) 
             fit = fit + 100000 - 5*programStep;
