@@ -100,11 +100,17 @@ turningMax = 0.33;
 maxSpeed = 0.45;
 fit = 0;
 v = 0;
-W1 = bestW1;%W1_50;
-B1 = bestB1;%B1_50;
-W2 = bestW2;%W2_50;
-B2 = bestB2;%B2_50;
-W3 = bestW3;%W3_50;
+% W1 = bestW1;
+% B1 = bestB1;
+% W2 = bestW2;
+% B2 = bestB2;
+% W3 = bestW3;
+
+W1 = bestW1;
+B1 = bestB1;
+W2 = bestW2;
+B2 = bestB2;
+W3 = bestW3;
 
 while advance(scenario)
     xlim([-5 106]);
@@ -262,7 +268,7 @@ while advance(scenario)
     z2 = tanh(a2);
     a3 = z2*W3;
     z3 = tanh(a3);
-    incrementd = z3(1)/13; %0.3
+    incrementd = z3(1)/11; %0.3
     d = d + incrementd
     incrementv = z3(2)/10; %/0.5
     v = v + incrementv;
@@ -281,7 +287,7 @@ while advance(scenario)
     
 
      %% FIT & FINISH
-        fit = fit - v*500;
+        fit = fit - v*100;
 %      stupnovita
         if (isCollision) 
             fit = fit + 100000 - 5*programStep
@@ -303,3 +309,4 @@ while advance(scenario)
             end
         end
 end
+fit = fit - 10*programStep;

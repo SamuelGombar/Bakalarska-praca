@@ -165,7 +165,7 @@ function fit = fitness(pop)
         z2 = tanh(a2);
         a3 = z2*W3;
         z3 = tanh(a3);
-        incrementd = z3(1)/13;
+        incrementd = z3(1)/11;
         d = d + incrementd;
         incrementv = z3(2)/10;
         v = v + incrementv;
@@ -190,7 +190,7 @@ function fit = fitness(pop)
 %             v = 0.5*z3(2);
 %         end
         %% FIT & FINISH
-        fit = fit - v*500;
+        fit = fit - v*300;
 %      stupnovita
         if (isCollision) 
             fit = fit + 100000 - 5*programStep;
@@ -223,5 +223,6 @@ function fit = fitness(pop)
 %             fit = 100000 - programStep;
 %         end
     end 
+    fit = fit + 10*programStep;
 
 end
