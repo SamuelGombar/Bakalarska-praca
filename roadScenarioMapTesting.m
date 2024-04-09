@@ -3,32 +3,13 @@ close all;
 clear;
 clc;
 
-%% Bicycle kinematics
-
 %% Environment & road creation
 scenario = drivingScenario;
-roadCenters = [0 0; 80 0; 81 0; 81 -40; 80 -40; 70 -37; 60 -43; 50 -37; 40 -43; 30 -37; 21 -40; 20 -40; 20 -80; 21 -80; 100 -80];
-%roadCenters = [20 30; 79 30; 80 30; 100 0; 80 -30; 79 -30; 20 -30; 20 30]; %circle map
-roadWidth = 10;
-road(scenario, roadCenters, roadWidth);
-
+% roadCenters = [0 0; 80 0; 81 0; 81 -40; 80 -40; 70 -37; 60 -43; 50 -37; 40 -43; 30 -37; 21 -40; 20 -40; 20 -80; 21 -80; 100 -80];
+Map2;
 %% Actor
-%global v1;
 v1 = vehicle(scenario, 'ClassID',1', 'Position',[0 0 0], 'Velocity',[0.1 -0.5 0], 'Yaw',0);
 v1.RearOverhang = 2.35;
-
-%% Actor trajectory
-%smoothTrajectory(v1, roadCenters, 30);
-
-%% Boundaries
-rb = roadBoundaries(scenario);
-% innerBoundary = rb{1};
-% outerBoundary = rb{2};
-outerBoundary = rb{1};
-outerBoundary(181,1) = 150;
-outerBoundary(182,1) = 150;
-outerBoundary(2,1) = -50;
-outerBoundary(3,1) = -50;
  
 %% Figures & plot
 %plot(scenario);
@@ -59,16 +40,12 @@ sensorLength = 15;
 sensorFov = 5*pi/6;
 
 %% Simulation
-%chasePlot(v1);
-%plot3(boundary(:,1),boundary(:,2),boundary(:,3),'g');
-%axis equal;
-%scenario.StopTime = 10;
-%fps = 60;
-%pauseTime = 1/fps;
 
 set(hFigure, 'KeyPressFcn', @kbInput1);
 
 L = 4.7;
+[sizeBoundary, ~] = size(outerBoundary);
+checkpoints = zeros(1, ((sizeBoundary-3)/2));
 
 theta = 0;
 global d;
@@ -94,10 +71,10 @@ while advance(scenario)
     frontAxle = [v1.Position(1) + 1.175*cos(theta) v1.Position(2) + 1.175*sin(theta)]; %vektor obsahujuci x y front axle
     tipOfSensor1 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/2+theta)...
         v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/2+theta)];
-    tipOfSensor2 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/8+theta)...
-        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/8+theta)];
-    tipOfSensor3 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/8+theta)...
-        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/8+theta)];
+    tipOfSensor2 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/4+theta)...
+        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/4+theta)];
+    tipOfSensor3 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/4+theta)...
+        v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/4+theta)];
     tipOfSensor4 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/2+theta)...
         v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/2+theta)];
     tipOfSensor5 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(theta)...
@@ -216,6 +193,24 @@ while advance(scenario)
             %isCollision = true;
         end
         %plot([A1(1) B1(1)], [A1(2), B1(2)], 'Color', 'green');
+    end
+
+    for j = 1:(sizeBoundary-3)/2
+        pcheck1 = outerBoundary(j+3,1);
+        qcheck1 = outerBoundary(j+3,2);
+        pcheck2 = outerBoundary(sizeBoundary-j+1,1);
+        qcheck2 = outerBoundary(sizeBoundary-j+1,2);
+        n8 = (pcheck2-pcheck1)*(qcheck1-yA)-(qcheck2-qcheck1)*(pcheck1-xA);
+        b8 = (pcheck2-pcheck1)*(yB-yA)-(qcheck2-qcheck1)*(xB-xA);
+        c8 = (xB-xA)*(qcheck1-yA)-(yB-yA)*(pcheck1-xA);
+        alfa2 = n8/b8;
+        betta2 = c8/b8;
+        blah1 = [pcheck1 qcheck1];
+        blah2 = [pcheck2 qcheck2];
+        if (alfa2 >= 0 && alfa2 <= 1) && (betta2 >= 0 && betta2 <= 1)
+            plot([blah1(1) blah2(1)], [blah1(2), blah2(2)], 'Color', 'blue');
+            checkpoints(j) = 1;
+        end
     end
 
     h1 = plot([frontAxle(1) tipOfSensor1(1)], [frontAxle(2) tipOfSensor1(2)], 'LineWidth', 0.5, 'Color', 'red');
