@@ -10,11 +10,10 @@ function fit = Fitness(pop)
     W3 = [pop(171:1:180)' pop(181:1:190)'];
     
     v1.Position = [0 0 0];
-    checkpoints = zeros(1, ((sizeBoundary-3)/2));
+%     checkpoints = zeros(1, ((sizeBoundary-3)/2));
+    checkpoints = [];
     while advance(scenario)
         programStep = programStep + 1;
-    
-        %v = 0.4;
         
         dx = v*cos(theta + Beta(L, d));
         dy = v*sin(theta + Beta(L, d));
@@ -77,7 +76,7 @@ function fit = Fitness(pop)
             alpha(1) = n1/b1;
             beta(1) = c1/b1;
             if (alpha(1) >= 0 && alpha(1) <= 1) && (beta(1) >= 0 && beta(1) <= 1)
-                x(1) = alpha(1);
+                x(1) = alpha(1)*2-1;
             end 
     
             n2 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -86,7 +85,7 @@ function fit = Fitness(pop)
             alpha(2) = n2/b2;
             beta(2) = c2/b2;
             if (alpha(2) >= 0 && alpha(2) <= 1) && (beta(2) >= 0 && beta(2) <= 1)
-                x(2) = alpha(2);
+                x(2) = alpha(2)*2-1;
             end
     
             n3 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -95,7 +94,7 @@ function fit = Fitness(pop)
             alpha(3) = n3/b3;
             beta(3) = c3/b3;
             if (alpha(3) >= 0 && alpha(3) <= 1) && (beta(3) >= 0 && beta(3) <= 1)
-                x(3) = alpha(3);
+                x(3) = alpha(3)*2-1;
             end
     
             n4 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -104,7 +103,7 @@ function fit = Fitness(pop)
             alpha(4) = n4/b4;
             beta(4) = c4/b4;
             if (alpha(4) >= 0 && alpha(4) <= 1) && (beta(4) >= 0 && beta(4) <= 1)
-                x(4) = alpha(4);
+                x(4) = alpha(4)*2-1;
             end
     
             n5 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -113,7 +112,7 @@ function fit = Fitness(pop)
             alpha(5) = n5/b5;
             beta(5) = c5/b5;
             if (alpha(5) >= 0 && alpha(5) <= 1) && (beta(5) >= 0 && beta(5) <= 1)
-                x(5) = alpha(5);
+                x(5) = alpha(5)*2-1;
             end
     
             %collision
@@ -176,25 +175,43 @@ function fit = Fitness(pop)
         z2 = tanh(a2);
         a3 = z2*W3;
         z3 = tanh(a3);
-        incrementd = z3(1)/11;
-        d = d + incrementd;
+        incrementd = z3(1)/10;
+
         incrementv = z3(2)/10;
+        %% spracovanie otacania kolesa
+%         if z3(1) > 0.05
+%             incrementd = maxIncrementd;
+%         elseif z3(1) < 0.05
+%             incrementd = -maxIncrementd;
+%         end
+
+        
+        %% spracovanie rychlosti
+%         if z3(2) > 0.05
+%             incrementv = maxIncrementv;
+%         elseif z3(2) < 0.05
+%             incrementv = -maxIncrementv;
+%         end
+        
+        counter = counter + 1;
+        Incrementd(counter) = incrementd;
+
+        %% ochrana pred prekrocenim maxu
+        if (d + incrementd) > turningMax
+            incrementd = 0;
+        elseif (d + incrementd) < -turningMax
+            incrementd = 0;
+        end
+        if (v + incrementv) > maxSpeed
+            incrementv = 0;
+        elseif (v + incrementv) < -maxSpeed
+            incrementv = 0;
+        end
+
+        d = d + incrementd;
         v = v + incrementv;
 
-        if d > turningMax
-            d = turningMax;
-        elseif d < -turningMax
-            d = -turningMax;
-        end
-
-        if v > maxSpeed
-            v = maxSpeed;
-        elseif v < -maxSpeed
-            v = -maxSpeed;
-        end
-
         %% FIT & FINISH
-        counter = counter + 1;
         V(counter) = v;
         if (isCollision) 
             fit = fit + 10000;
@@ -203,16 +220,17 @@ function fit = Fitness(pop)
         if (programStep > 1000) 
              fit = fit + 10000;
             break
-       end
-        if ((v1.Position(1) >= 70) && (v1.Position(1) <= 74))
-            if ((v1.Position(2) <= -35) && (v1.Position(2) >= -45)) 
-                %obdari ho, kedze nepripocita 10000
+        end
+        if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
+            if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85)) 
                 break
             end
         end
-    end 
-    fit = fit + 2*programStep;
+    end
+    fit = fit + programStep;        %ulozit fit hodnoty jednotlive
     fit = fit - (sum(V)*1000)/programStep; % 450
-    fit = fit - 10*sum(checkpoints);
-
+    fit = fit - 100*sum(checkpoints);
+    fit = fit + (100*sum(abs(Incrementd)))/programStep;
+%     (10000*sum(Incrementd))/programStep
+%     hodnota = 100*sum(Incrementd)
 end

@@ -22,23 +22,29 @@ fit3 = zeros(1, popSize);
 pop3 = zeros(popSize, numberOfGenes);
 
 for gen = 1:maxGen
+    disp(gen);
+    if mod(gen, 30) == 0
+        [pop2, fit2]= Migrate(pop1, fit1, pop2, fit2);
+        [pop3, fit3] = Migrate(pop1, fit1, pop3, fit3);
+    end
+
     if mod(gen, 15) == 0
-        pop1 = Migrate(pop2, fit2, pop1, fit1);
-        pop3 = Migrate(pop2, fit2, pop3, fit3);
-        pop2 = warming(pop2, 0.2, paramInterval);
+        [pop1, fit1] = Migrate(pop2, fit2, pop1, fit1);
+        [pop3, fit3] = Migrate(pop2, fit2, pop3, fit3);
     end
 
     if mod(gen, 30) == 0
-        pop2 = Migrate(pop1, fit1, pop2, fit2);
-        pop3 = Migrate(pop1, fit1, pop3, fit3);
         pop1 = Reset(popSize, numberOfGenes);
+    end
+
+    if mod(gen, 15) == 0
+        pop2 = warming(pop2, 0.1, paramInterval);
     end
 
     parfor o = 1:popSize
         fit1(o) = Fitness(pop1(o,:));
         fit2(o) = Fitness(pop2(o,:));
         fit3(o) = Fitness(pop3(o,:));
-        disp(gen);
     end %CYKLUS KAZDEHO JEDINCA
     
     %% GA Island 1
@@ -69,7 +75,7 @@ for gen = 1:maxGen
     plot(evo2, 'Color', 'green', 'LineWidth', 1);
     plot(evo3, 'Color', 'blue', 'LineWidth', 1);
     hold off;
-    xlim([0 100]);
+    xlim([0 maxGen]);
     drawnow();
 
     if gen == 15

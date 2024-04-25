@@ -47,8 +47,8 @@ for j = 0:2:2
 end
 
 %% Radars
-sensorLength = 15;
-sensorFov = 5*pi/6; %5*pi/6;
+sensorLength = 20;
+sensorFov = 5*pi/8; %5*pi/6;
 
 %% Simulation
 L = 4.7;
@@ -59,25 +59,33 @@ d = 0;
 programStep = 0;
 collision = 0;
 isCollision = false;
-turningMax = 0.33;
-maxSpeed = 0.45;
+turningMax = 0.4;
+maxSpeed = 0.5;
 fit = 0;
 v = 0;
 counter = 0;
 [sizeBoundary, ~] = size(outerBoundary);
 checkpoints = zeros(1, (sizeBoundary-3)/2);
+maxIncrementd = 0.08;
+maxIncrementv = 0.05;
 
-W1 = bestW1;
-B1 = bestB1;
-W2 = bestW2;
-B2 = bestB2;
-W3 = bestW3;
+% W1 = bestW1;
+% B1 = bestB1;
+% W2 = bestW2;
+% B2 = bestB2;
+% W3 = bestW3;
 
-% W1 = W1_50;
-% B1 = B1_50;
-% W2 = W2_50;
-% B2 = B2_50;
-% W3 = W3_50;
+W1 = W1_50;
+B1 = B1_50;
+W2 = W2_50;
+B2 = B2_50;
+W3 = W3_50;
+
+% W1 = W1_15;
+% B1 = B1_15;
+% W2 = W2_15;
+% B2 = B2_15;
+% W3 = W3_15;
 
 while advance(scenario)
     xlim([-5 106]);
@@ -143,7 +151,7 @@ while advance(scenario)
         alpha(1) = n1/b1;
         beta(1) = c1/b1;
         if (alpha(1) >= 0 && alpha(1) <= 1) && (beta(1) >= 0 && beta(1) <= 1)
-            x(1) = alpha(1);
+            x(1) = alpha(1)*2-1;
         end 
 
         n2 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -152,7 +160,7 @@ while advance(scenario)
         alpha(2) = n2/b2;
         beta(2) = c2/b2;
         if (alpha(2) >= 0 && alpha(2) <= 1) && (beta(2) >= 0 && beta(2) <= 1)
-            x(2) = alpha(2);
+            x(2) = alpha(2)*2-1;
         end
 
         n3 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -161,7 +169,7 @@ while advance(scenario)
         alpha(3) = n3/b3;
         beta(3) = c3/b3;
         if (alpha(3) >= 0 && alpha(3) <= 1) && (beta(3) >= 0 && beta(3) <= 1)
-            x(3) = alpha(3);
+            x(3) = alpha(3)*2-1;
         end
 
         n4 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -170,7 +178,7 @@ while advance(scenario)
         alpha(4) = n4/b4;
         beta(4) = c4/b4;
         if (alpha(4) >= 0 && alpha(4) <= 1) && (beta(4) >= 0 && beta(4) <= 1)
-            x(4) = alpha(4);
+            x(4) = alpha(4)*2-1;
         end
 
         n5 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -179,7 +187,7 @@ while advance(scenario)
         alpha(5) = n5/b5;
         beta(5) = c5/b5;
         if (alpha(5) >= 0 && alpha(5) <= 1) && (beta(5) >= 0 && beta(5) <= 1)
-            x(5) = alpha(5);
+            x(5) = alpha(5)*2-1;
         end
 
         %collision
@@ -254,42 +262,63 @@ while advance(scenario)
     z2 = tanh(a2);
     a3 = z2*W3;
     z3 = tanh(a3);
-    incrementd = z3(1)/11; %0.3
+    incrementd = z3(1)/10;
+
+    incrementv = z3(2)/10;
+    %% spracovanie otacania kolesa
+%     if z3(1) > 0
+%         incrementd = maxIncrementd;
+%     elseif z3(1) < -0
+%         incrementd = -maxIncrementd;
+%     end
+%     
+%     %% spracovanie rychlosti
+%     if z3(2) > 0
+%         incrementv = maxIncrementv;
+%     elseif z3(2) < -0
+%         incrementv = -maxIncrementv;
+%     end
+
+    counter = counter + 1;
+    Incrementd(counter) = abs(incrementd);
+    
+    %% ochrana pred prekrocenim maxu
+    if (d + incrementd) > turningMax
+        incrementd = 0;
+    elseif (d + incrementd) < -turningMax
+        incrementd = 0;
+    end
+    if (v + incrementv) > maxSpeed
+        incrementv = 0;
+    elseif (v + incrementv) < -maxSpeed
+        incrementv = 0;
+    end
+
     d = d + incrementd;
-    incrementv = z3(2)/10; %/0.5
     v = v + incrementv;
 
-    if d > turningMax
-        d = turningMax;
-    elseif d < -turningMax
-        d = -turningMax;
-    end
 
-    if v > maxSpeed
-        v = maxSpeed;
-    elseif v < -maxSpeed
-        v = -maxSpeed;
-    end
-    v;
-    
+ %% FIT & FINISH
+    V(counter) = v;
 
-     %% FIT & FINISH
-        counter = counter + 1;
-        V(counter) = v;
-        if (isCollision) 
-            fit = fit + 10000;
+    if (isCollision) 
+        fit = fit + 10000;
+        break
+    end
+    if (programStep > 1000) 
+        fit = fit + 10000;
+        break
+    end
+    if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
+        if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85)) 
             break
         end
-        if (programStep > 1000) 
-            fit = fit + 10000;
-            break
-       end
-        if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
-            if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85)) 
-                break
-            end
-        end
+    end
 end
-fit = fit + 2*programStep;
-fit = fit - (sum(V)*1000)/programStep;
-fit = fit - 10*sum(checkpoints)
+fit = fit + programStep;
+fit = fit - (sum(V)*1000)/programStep; % 450
+fit = fit - 100*sum(checkpoints)
+fit = fit + (100*sum(abs(Incrementd)))/programStep;
+% (1000*sum(Incrementd))/programStep
+% fit = fit + 10*sum(Incrementd)
+% hodnota = 100*sum(Incrementd);
