@@ -2,6 +2,12 @@ function fit = Fitness(pop)
     init;
     %% FIT FUNKCIA
     fit = 0;
+    fit1 = 0;
+    fit2 = 0;
+    fit3 = 0;
+    fit4 = 0;
+    fit5 = 0;
+    fit6 = 0;
     W1 = [pop(1:10); pop(11:20); pop(21:30); pop(31:40); pop(41:50)];
     B1 = pop(51:1:60);
     W2 = [pop(61:1:70); pop(71:1:80); pop(81:1:90); pop(91:1:100); pop(101:1:110);
@@ -175,7 +181,7 @@ function fit = Fitness(pop)
         z2 = tanh(a2);
         a3 = z2*W3;
         z3 = tanh(a3);
-        incrementd = z3(1)/10;
+        incrementd = z3(1)/8;
 
         incrementv = z3(2)/10;
         %% spracovanie otacania kolesa
@@ -193,8 +199,7 @@ function fit = Fitness(pop)
 %             incrementv = -maxIncrementv;
 %         end
         
-        counter = counter + 1;
-        Incrementd(counter) = incrementd;
+        Incrementd(programStep) = abs(incrementd);
 
         %% ochrana pred prekrocenim maxu
         if (d + incrementd) > turningMax
@@ -212,13 +217,11 @@ function fit = Fitness(pop)
         v = v + incrementv;
 
         %% FIT & FINISH
-        V(counter) = v;
+        V(programStep) = v;
         if (isCollision) 
-            fit = fit + 10000;
             break
         end
         if (programStep > 1000) 
-             fit = fit + 10000;
             break
         end
         if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
@@ -227,10 +230,21 @@ function fit = Fitness(pop)
             end
         end
     end
-    fit = fit + programStep;        %ulozit fit hodnoty jednotlive
-    fit = fit - (sum(V)*1000)/programStep; % 450
-    fit = fit - 100*sum(checkpoints);
-    fit = fit + (100*sum(abs(Incrementd)))/programStep;
+    fit1 = fit + programStep;        %ulozit fit hodnoty jednotlive
+%     fprintf("fit program steps: %f\n", fit1);
+    fit2 = fit - (sum(V)*1000)/programStep; % 450
+%     fprintf("fit rychlost: %f\n", fit2);
+    fit3 = fit - 10*sum(checkpoints);
+%     fprintf("fit checkpoints: %f\n", fit3);
+%     fit4 = fit + (10000*sum(abs(Incrementd))/programStep);
+%     fprintf("fit increments: %f\n", fit4);
+    if (isCollision) 
+            fit5 = fit + 10000;
+    end
+    if (programStep > 1000) 
+            fit6 = fit + 10000;
+    end
+    fit = fit1 + fit2 + fit3 + fit4 + fit5 + fit6;
 %     (10000*sum(Incrementd))/programStep
 %     hodnota = 100*sum(Incrementd)
 end

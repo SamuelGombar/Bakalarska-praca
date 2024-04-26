@@ -1,6 +1,6 @@
 %% Clearing
-clc;
-close all;
+% clc;
+% close all;
 
 %% Environment & Map
 scenario = drivingScenario;
@@ -48,7 +48,7 @@ end
 
 %% Radars
 sensorLength = 20;
-sensorFov = 5*pi/8; %5*pi/6;
+sensorFov = 5*pi/11; %5*pi/6;
 
 %% Simulation
 L = 4.7;
@@ -62,6 +62,12 @@ isCollision = false;
 turningMax = 0.4;
 maxSpeed = 0.5;
 fit = 0;
+fit1 = 0;
+fit2 = 0;
+fit3 = 0;
+fit4 = 0;
+fit5 = 0;
+fit6 = 0;
 v = 0;
 counter = 0;
 [sizeBoundary, ~] = size(outerBoundary);
@@ -69,17 +75,17 @@ checkpoints = zeros(1, (sizeBoundary-3)/2);
 maxIncrementd = 0.08;
 maxIncrementv = 0.05;
 
-% W1 = bestW1;
-% B1 = bestB1;
-% W2 = bestW2;
-% B2 = bestB2;
-% W3 = bestW3;
+W1 = bestW1;
+B1 = bestB1;
+W2 = bestW2;
+B2 = bestB2;
+W3 = bestW3;
 
-W1 = W1_50;
-B1 = B1_50;
-W2 = W2_50;
-B2 = B2_50;
-W3 = W3_50;
+% W1 = W1_50;
+% B1 = B1_50;
+% W2 = W2_50;
+% B2 = B2_50;
+% W3 = W3_50;
 
 % W1 = W1_15;
 % B1 = B1_15;
@@ -262,26 +268,26 @@ while advance(scenario)
     z2 = tanh(a2);
     a3 = z2*W3;
     z3 = tanh(a3);
-    incrementd = z3(1)/10;
+    incrementd = z3(1)/8;
 
     incrementv = z3(2)/10;
     %% spracovanie otacania kolesa
-%     if z3(1) > 0
-%         incrementd = maxIncrementd;
-%     elseif z3(1) < -0
-%         incrementd = -maxIncrementd;
-%     end
-%     
-%     %% spracovanie rychlosti
-%     if z3(2) > 0
-%         incrementv = maxIncrementv;
-%     elseif z3(2) < -0
-%         incrementv = -maxIncrementv;
-%     end
+%         if z3(1) > 0.05
+%             incrementd = maxIncrementd;
+%         elseif z3(1) < 0.05
+%             incrementd = -maxIncrementd;
+%         end
 
-    counter = counter + 1;
-    Incrementd(counter) = abs(incrementd);
-    
+        
+        %% spracovanie rychlosti
+%         if z3(2) > 0.05
+%             incrementv = maxIncrementv;
+%         elseif z3(2) < 0.05
+%             incrementv = -maxIncrementv;
+%         end
+        
+    Incrementd(programStep) = abs(incrementd);
+
     %% ochrana pred prekrocenim maxu
     if (d + incrementd) > turningMax
         incrementd = 0;
@@ -297,16 +303,12 @@ while advance(scenario)
     d = d + incrementd;
     v = v + incrementv;
 
-
- %% FIT & FINISH
-    V(counter) = v;
-
+    %% FIT & FINISH
+    V(programStep) = v;
     if (isCollision) 
-        fit = fit + 10000;
         break
     end
     if (programStep > 1000) 
-        fit = fit + 10000;
         break
     end
     if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
@@ -315,10 +317,20 @@ while advance(scenario)
         end
     end
 end
-fit = fit + programStep;
-fit = fit - (sum(V)*1000)/programStep; % 450
-fit = fit - 100*sum(checkpoints)
-fit = fit + (100*sum(abs(Incrementd)))/programStep;
-% (1000*sum(Incrementd))/programStep
-% fit = fit + 10*sum(Incrementd)
-% hodnota = 100*sum(Incrementd);
+fit1 = fit + programStep;        %ulozit fit hodnoty jednotlive
+fprintf("fit program steps: %f\n", fit1);
+fit2 = fit - (sum(V)*1000)/programStep; % 450
+fprintf("fit rychlost: %f\n", fit2);
+fit3 = fit - 10*sum(checkpoints);
+fprintf("fit checkpoints: %f\n", fit3);
+% fit4 = fit + (10000*sum(abs(Incrementd))/programStep);
+% fprintf("fit increments: %f\n", fit4);
+if (isCollision) 
+        fit5 = fit + 10000;
+end
+if (programStep > 1000) 
+        fit6 = fit + 10000;
+end
+fit = fit1 + fit2 + fit3 + fit4 + fit5 + fit6
+%     (10000*sum(Incrementd))/programStep
+%     hodnota = 100*sum(Incrementd)
