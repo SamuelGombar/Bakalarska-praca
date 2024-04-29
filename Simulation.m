@@ -3,8 +3,7 @@
 % close all;
 
 %% Environment & Map
-scenario = drivingScenario;
-Map1;
+map_test2;
 
 %% Actor
 v1 = vehicle(scenario, 'ClassID',1', 'Position',[0 0 0], 'Velocity',[0.1 -0.5 0], 'Yaw', 0);
@@ -21,46 +20,35 @@ hAxes1 = axes('Parent',hPanel1);
 plot(scenario, 'Parent', hAxes1);
 hold on;
 
-%% Start
-plot([-4 -4 0 0 -4], [5 -5 -5 5 5], 'Color', 'black');
-fill([-4 -4 0 0 -4], [5 -5 -5 5 5], 'green');
-
-%% Finish
-for j = 0:2:2
-    flop = true;
-    if j == 2 
-        flop = false;
-    end
-    xfinish = [100+j 100+j 102+j 102+j 100+j];
-    for i = 0:2.5:7.5
-        yfinish = [-75-i -77.5-i -77.5-i -75-i -75-i];
-        hplot = plot(xfinish, yfinish);
-        hplot.Color = 'black';
-        if flop == true
-            fill(xfinish, yfinish, 'white');
-            flop = false;
-        else
-            fill(xfinish, yfinish, 'black');
-            flop = true;
-        end
-    end
-end
+%% Start & Finish
+map_test2_startfinish;
+plot(outerBoundary(:,1), outerBoundary(:,2));
 
 %% Radars
 sensorLength = 20;
-sensorFov = 5*pi/11; %5*pi/6;
+sensorFov = 5*pi/10;
+
+%% Car
+L = 4.7;
+m = 1000;
+d = 0;
+v = 0;
+
+turningMax = 0.65;
+maxSpeed = 0.5;
+
+dF = 50;
 
 %% Simulation
-L = 4.7;
-
-incrementd = 0;
-theta = 0;
-d = 0;
 programStep = 0;
-collision = 0;
+theta = 0;
+incrementd = 0;
+
 isCollision = false;
-turningMax = 0.4;
-maxSpeed = 0.5;
+
+V = [];
+Incrementd = [];
+
 fit = 0;
 fit1 = 0;
 fit2 = 0;
@@ -68,12 +56,19 @@ fit3 = 0;
 fit4 = 0;
 fit5 = 0;
 fit6 = 0;
-v = 0;
-counter = 0;
 [sizeBoundary, ~] = size(outerBoundary);
 checkpoints = zeros(1, (sizeBoundary-3)/2);
-maxIncrementd = 0.08;
-maxIncrementv = 0.05;
+
+calpha1 = 0;
+calpha2 = 0;
+calpha3 = 0;
+calpha4 = 0;
+calpha5 = 0;
+alpharray1 = [];
+alpharray2 = [];
+alpharray3 = [];
+alpharray4 = [];
+alpharray5 = [];
 
 W1 = bestW1;
 B1 = bestB1;
@@ -94,8 +89,8 @@ W3 = bestW3;
 % W3 = W3_15;
 
 while advance(scenario)
-    xlim([-5 106]);
-    ylim([-95 15]);
+    xlim(XLIMITS);
+    ylim(YLIMITS);
     programStep = programStep + 1;
 
     dx = v*cos(theta + Beta(L, d));
@@ -157,7 +152,9 @@ while advance(scenario)
         alpha(1) = n1/b1;
         beta(1) = c1/b1;
         if (alpha(1) >= 0 && alpha(1) <= 1) && (beta(1) >= 0 && beta(1) <= 1)
-            x(1) = alpha(1)*2-1;
+            calpha1 = calpha1 + 1;
+            alpharray1(calpha1) = 6*alpha(1)-3;
+            x(1) = min(alpharray1);
         end 
 
         n2 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -166,7 +163,9 @@ while advance(scenario)
         alpha(2) = n2/b2;
         beta(2) = c2/b2;
         if (alpha(2) >= 0 && alpha(2) <= 1) && (beta(2) >= 0 && beta(2) <= 1)
-            x(2) = alpha(2)*2-1;
+            calpha2 = calpha2 + 1;
+            alpharray2(calpha2) = 6*alpha(2)-3;
+            x(2) = min(alpharray2);
         end
 
         n3 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -175,7 +174,9 @@ while advance(scenario)
         alpha(3) = n3/b3;
         beta(3) = c3/b3;
         if (alpha(3) >= 0 && alpha(3) <= 1) && (beta(3) >= 0 && beta(3) <= 1)
-            x(3) = alpha(3)*2-1;
+            calpha3 = calpha3 + 1;
+            alpharray3(calpha3) = 6*alpha(3)-3;
+            x(3) = min(alpharray3);
         end
 
         n4 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -184,7 +185,9 @@ while advance(scenario)
         alpha(4) = n4/b4;
         beta(4) = c4/b4;
         if (alpha(4) >= 0 && alpha(4) <= 1) && (beta(4) >= 0 && beta(4) <= 1)
-            x(4) = alpha(4)*2-1;
+            calpha4 = calpha4 + 1;
+            alpharray4(calpha4) = 6*alpha(4)-3;
+            x(4) = min(alpharray4);
         end
 
         n5 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -193,7 +196,9 @@ while advance(scenario)
         alpha(5) = n5/b5;
         beta(5) = c5/b5;
         if (alpha(5) >= 0 && alpha(5) <= 1) && (beta(5) >= 0 && beta(5) <= 1)
-            x(5) = alpha(5)*2-1;
+            calpha5 = calpha5 + 1;
+            alpharray5(calpha5) = 6*alpha(5)-3;
+            x(5) = min(alpharray5);
         end
 
         %collision
@@ -209,6 +214,7 @@ while advance(scenario)
         alfa = n6/b6;
         betta = c6/b6;
         if (alfa >= 0 && alfa <= 1) && (betta >= 0 && betta <= 1)
+            disp("TU SOM NARAZIL POZDLZ NA DLZKU")
             isCollision = true;
             plot([A(1) B(1)], [A(2), B(2)], 'Color', 'blue');
         end
@@ -224,11 +230,26 @@ while advance(scenario)
         alfa1 = n7/b7;
         betta1 = c7/b7;
         if (alfa1 >= 0 && alfa1 <= 1) && (betta1 >= 0 && betta1 <= 1)
+            disp("TU SOM NARAZIL KOLMO NA DLZKU")
             isCollision = true;
+            v1.Position
+%             alfa1
+%             betta1
             plot([D1(1) E1(1)], [D1(2), E1(2)], 'Color', 'green');
         end
 
     end
+    calpha1 = 0;
+    calpha2 = 0;
+    calpha3 = 0;
+    calpha4 = 0;
+    calpha5 = 0;
+    alpharray1 = 0;
+    alpharray2 = 0;
+    alpharray3 = 0;
+    alpharray4 = 0;
+    alpharray5 = 0;
+    
 
     %checkpoints
     [sizeBoundary, ~] = size(outerBoundary); 
@@ -268,24 +289,13 @@ while advance(scenario)
     z2 = tanh(a2);
     a3 = z2*W3;
     z3 = tanh(a3);
-    incrementd = z3(1)/8;
+    incrementd = z3(1)/10;
+    x
+%     d
 
-    incrementv = z3(2)/10;
-    %% spracovanie otacania kolesa
-%         if z3(1) > 0.05
-%             incrementd = maxIncrementd;
-%         elseif z3(1) < 0.05
-%             incrementd = -maxIncrementd;
-%         end
+%     incrementv = z3(2)/10;
+    incrementv = z3(2)*dF/m;
 
-        
-        %% spracovanie rychlosti
-%         if z3(2) > 0.05
-%             incrementv = maxIncrementv;
-%         elseif z3(2) < 0.05
-%             incrementv = -maxIncrementv;
-%         end
-        
     Incrementd(programStep) = abs(incrementd);
 
     %% ochrana pred prekrocenim maxu
@@ -306,31 +316,32 @@ while advance(scenario)
     %% FIT & FINISH
     V(programStep) = v;
     if (isCollision) 
+                disp("TU")
+%         break
+    end
+    if (programStep > 2000) 
         break
     end
-    if (programStep > 1000) 
-        break
-    end
-    if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
-        if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85)) 
+
+    if ((v1.Position(1) >= XFINISH1) && (v1.Position(1) <= XFINISH2))
+        if ((v1.Position(2) <= YFINISH1) && (v1.Position(2) >= YFINISH2)) 
             break
         end
     end
 end
-fit1 = fit + programStep;        %ulozit fit hodnoty jednotlive
+fit1 = fit + 2*programStep;        %ulozit fit hodnoty jednotlive
 fprintf("fit program steps: %f\n", fit1);
 fit2 = fit - (sum(V)*1000)/programStep; % 450
 fprintf("fit rychlost: %f\n", fit2);
-fit3 = fit - 10*sum(checkpoints);
+fit3 = fit - 50*sum(checkpoints);
 fprintf("fit checkpoints: %f\n", fit3);
-% fit4 = fit + (10000*sum(abs(Incrementd))/programStep);
+% fit4 = fit + (100*sum(abs(Incrementd))/programStep);
 % fprintf("fit increments: %f\n", fit4);
 if (isCollision) 
         fit5 = fit + 10000;
 end
-if (programStep > 1000) 
+if (programStep > 2000) 
         fit6 = fit + 10000;
 end
 fit = fit1 + fit2 + fit3 + fit4 + fit5 + fit6
-%     (10000*sum(Incrementd))/programStep
-%     hodnota = 100*sum(Incrementd)
+

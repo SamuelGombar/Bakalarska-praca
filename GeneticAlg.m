@@ -2,42 +2,53 @@
 close all;
 clear;
 clc;
+load LatestSpecimen.mat;
+exists = false;
 
-maxGen = 100;
+maxGen = 50;
 popSize = 50;
 numberOfGenes = 190;
 paramInterval = [ones(1,numberOfGenes)*-3; ones(1,numberOfGenes)*3];
-amp = 0.1*ones(1, numberOfGenes);
 
-%% Island 1
-fit1 = zeros(1, popSize);
-pop1 = zeros(popSize, numberOfGenes);
-
-%% Island 2
-fit2 = zeros(1, popSize);
-pop2 = zeros(popSize, numberOfGenes);
-
-%% Island 3
-fit3 = zeros(1, popSize);
-pop3 = zeros(popSize, numberOfGenes);
+    %% Island 1
+    fit1 = zeros(1, popSize);
+    pop1 = zeros(popSize, numberOfGenes);
+    
+    %% Island 2
+    fit2 = zeros(1, popSize);
+    pop2 = zeros(popSize, numberOfGenes);
+    
+    if exist('bestPop', 'var') == 1
+        exists = true;
+        pop1 = bestPop;
+        fit1 = bestFit;
+        pop2 = bestPop;
+        fit2 = bestFit;
+        pop3 = bestPop;
+        fit3 = bestFit;
+    else
+        %% Island 3
+        fit3 = zeros(1, popSize);
+        pop3 = zeros(popSize, numberOfGenes);
+    end
 
 for gen = 1:maxGen
     disp(gen);
-    if mod(gen, 30) == 0
-        [pop2, fit2]= Migrate(pop1, fit1, pop2, fit2);
+    if mod(gen, 15) == 0
+        [pop2, fit2] = Migrate(pop1, fit1, pop2, fit2);
         [pop3, fit3] = Migrate(pop1, fit1, pop3, fit3);
     end
 
-    if mod(gen, 15) == 0
+    if mod(gen, 7) == 0
         [pop1, fit1] = Migrate(pop2, fit2, pop1, fit1);
         [pop3, fit3] = Migrate(pop2, fit2, pop3, fit3);
     end
 
-    if mod(gen, 30) == 0
+    if (mod(gen, 15) == 0) && (~exists)
         pop1 = Reset(popSize, numberOfGenes);
     end
 
-    if mod(gen, 15) == 0
+    if (mod(gen, 7) == 0)
         pop2 = warming(pop2, 0.1, paramInterval);
     end
 
@@ -52,22 +63,23 @@ for gen = 1:maxGen
     evo1(gen) = l;
     oldPop1 = pop1;
 
-    pop1 = GeneticFcn(pop1, fit1, paramInterval, amp);
+    pop1 = GeneticFcn(pop1, fit1, paramInterval);
 
     %% GA Island 2
     [m, j] = min(fit2);
     evo2(gen) = m;
     oldPop2 = pop2;
 
-    pop2 = GeneticFcn(pop2, fit2, paramInterval, amp);
+    pop2 = GeneticFcn(pop2, fit2, paramInterval);
 
     %% GA Island 3
     [n, k] = min(fit3);
     fitValue = min(fit3)
+    mojafit = fitValue;
     evo3(gen) = n;
     oldPop3 = pop3;
 
-    pop3 = GeneticFcn(pop3, fit3, paramInterval, amp);
+    pop3 = GeneticFcn(pop3, fit3, paramInterval);
     
     clf;
     hold on;
@@ -104,6 +116,18 @@ bestW2 = [oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90); oldPop3(k,
     oldPop3(k,111:1:120); oldPop3(k,121:1:130); oldPop3(k,131:1:140); oldPop3(k,141:1:150); oldPop3(k,151:1:160)];
 bestB2 = oldPop3(k,161:1:170);
 bestW3 = [oldPop3(k,171:1:180)' oldPop3(k,181:1:190)'];
+bestPop = pop3;
+bestFit = fit3;
+
+uloz.bestW1 = bestW1;
+uloz.bestB1 = bestB1;
+uloz.bestW2 = bestW2;
+uloz.bestB2 = bestB2;
+uloz.bestW3 = bestW3;
+uloz.bestPop = bestPop;
+uloz.bestFit = bestFit;
+filename = 'LatestSpecimen.mat';
+save(filename, '-struct', 'uloz');
 
 clf;
 hold on;

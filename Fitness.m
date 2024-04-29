@@ -82,7 +82,9 @@ function fit = Fitness(pop)
             alpha(1) = n1/b1;
             beta(1) = c1/b1;
             if (alpha(1) >= 0 && alpha(1) <= 1) && (beta(1) >= 0 && beta(1) <= 1)
-                x(1) = alpha(1)*2-1;
+                calpha1 = calpha1 + 1;
+                alpharray1(calpha1) = 6*alpha(1)-3; %alpha(1)*2-1
+                x(1) = min(alpharray1);
             end 
     
             n2 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -91,7 +93,9 @@ function fit = Fitness(pop)
             alpha(2) = n2/b2;
             beta(2) = c2/b2;
             if (alpha(2) >= 0 && alpha(2) <= 1) && (beta(2) >= 0 && beta(2) <= 1)
-                x(2) = alpha(2)*2-1;
+                calpha2 = calpha2 + 1;
+                alpharray2(calpha2) = 6*alpha(2)-3;
+                x(2) = min(alpharray2);
             end
     
             n3 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -100,7 +104,9 @@ function fit = Fitness(pop)
             alpha(3) = n3/b3;
             beta(3) = c3/b3;
             if (alpha(3) >= 0 && alpha(3) <= 1) && (beta(3) >= 0 && beta(3) <= 1)
-                x(3) = alpha(3)*2-1;
+                calpha3 = calpha3 + 1;
+                alpharray3(calpha3) = 6*alpha(3)-3;
+                x(3) = min(alpharray3);
             end
     
             n4 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -109,7 +115,9 @@ function fit = Fitness(pop)
             alpha(4) = n4/b4;
             beta(4) = c4/b4;
             if (alpha(4) >= 0 && alpha(4) <= 1) && (beta(4) >= 0 && beta(4) <= 1)
-                x(4) = alpha(4)*2-1;
+                calpha4 = calpha4 + 1;
+                alpharray4(calpha4) = 6*alpha(4)-3;
+                x(4) = min(alpharray4);
             end
     
             n5 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
@@ -118,7 +126,9 @@ function fit = Fitness(pop)
             alpha(5) = n5/b5;
             beta(5) = c5/b5;
             if (alpha(5) >= 0 && alpha(5) <= 1) && (beta(5) >= 0 && beta(5) <= 1)
-                x(5) = alpha(5)*2-1;
+                calpha5 = calpha5 + 1;
+                alpharray5(calpha5) = 6*alpha(5)-3;
+                x(5) = min(alpharray5);
             end
     
             %collision
@@ -153,8 +163,18 @@ function fit = Fitness(pop)
                 isCollision = true;
                 break       %POZOR SI PRIDAL BREAK
             end
-            
         end
+        calpha1 = 0;
+        calpha2 = 0;
+        calpha3 = 0;
+        calpha4 = 0;
+        calpha5 = 0;
+        alpharray1 = 0;
+        alpharray2 = 0;
+        alpharray3 = 0;
+        alpharray4 = 0;
+        alpharray5 = 0;
+
         %checkpoints
         [sizeBoundary, ~] = size(outerBoundary); 
         for j = 1:(sizeBoundary-3)/2
@@ -181,23 +201,9 @@ function fit = Fitness(pop)
         z2 = tanh(a2);
         a3 = z2*W3;
         z3 = tanh(a3);
-        incrementd = z3(1)/8;
+        incrementd = z3(1)/10;
 
-        incrementv = z3(2)/10;
-        %% spracovanie otacania kolesa
-%         if z3(1) > 0.05
-%             incrementd = maxIncrementd;
-%         elseif z3(1) < 0.05
-%             incrementd = -maxIncrementd;
-%         end
-
-        
-        %% spracovanie rychlosti
-%         if z3(2) > 0.05
-%             incrementv = maxIncrementv;
-%         elseif z3(2) < 0.05
-%             incrementv = -maxIncrementv;
-%         end
+        incrementv = z3(2)*dF/m;
         
         Incrementd(programStep) = abs(incrementd);
 
@@ -221,30 +227,30 @@ function fit = Fitness(pop)
         if (isCollision) 
             break
         end
-        if (programStep > 1000) 
+        if (programStep > 2000) 
             break
         end
-        if ((v1.Position(1) >= 100) && (v1.Position(1) <= 104))
-            if ((v1.Position(2) <= -75) && (v1.Position(2) >= -85)) 
+
+        if ((v1.Position(1) >= XFINISH1) && (v1.Position(1) <= XFINISH2))
+            if ((v1.Position(2) <= YFINISH1) && (v1.Position(2) >= YFINISH2)) 
                 break
             end
         end
     end
-    fit1 = fit + programStep;        %ulozit fit hodnoty jednotlive
-%     fprintf("fit program steps: %f\n", fit1);
+    fit1 = fit + 2*programStep;
+
     fit2 = fit - (sum(V)*1000)/programStep; % 450
-%     fprintf("fit rychlost: %f\n", fit2);
-    fit3 = fit - 10*sum(checkpoints);
-%     fprintf("fit checkpoints: %f\n", fit3);
-%     fit4 = fit + (10000*sum(abs(Incrementd))/programStep);
-%     fprintf("fit increments: %f\n", fit4);
+
+    fit3 = fit - 50*sum(checkpoints);
+
+%     fit4 = fit + (100*sum(abs(Incrementd))/programStep);
+
     if (isCollision) 
             fit5 = fit + 10000;
     end
-    if (programStep > 1000) 
+    if (programStep > 2000) 
             fit6 = fit + 10000;
     end
     fit = fit1 + fit2 + fit3 + fit4 + fit5 + fit6;
-%     (10000*sum(Incrementd))/programStep
-%     hodnota = 100*sum(Incrementd)
+
 end
