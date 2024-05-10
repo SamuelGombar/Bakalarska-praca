@@ -2,7 +2,7 @@
 close all;
 clear;
 clc;
-load LatestSpecimen.mat;
+% load LatestSpecimen.mat;
 exists = false;
 
 maxGen = 50;
@@ -34,21 +34,21 @@ paramInterval = [ones(1,numberOfGenes)*-3; ones(1,numberOfGenes)*3];
 
 for gen = 1:maxGen
     disp(gen);
-    if mod(gen, 15) == 0
+    if mod(gen, 20) == 0
         [pop2, fit2] = Migrate(pop1, fit1, pop2, fit2);
         [pop3, fit3] = Migrate(pop1, fit1, pop3, fit3);
     end
 
-    if mod(gen, 7) == 0
+    if mod(gen, 10) == 0
         [pop1, fit1] = Migrate(pop2, fit2, pop1, fit1);
         [pop3, fit3] = Migrate(pop2, fit2, pop3, fit3);
     end
 
-    if (mod(gen, 15) == 0) && (~exists)
+    if (mod(gen, 20) == 0) && (~exists)
         pop1 = Reset(popSize, numberOfGenes);
     end
 
-    if (mod(gen, 7) == 0)
+    if (mod(gen, 10) == 0)
         pop2 = warming(pop2, 0.1, paramInterval);
     end
 
@@ -66,8 +66,8 @@ for gen = 1:maxGen
     pop1 = GeneticFcn(pop1, fit1, paramInterval);
 
     %% GA Island 2
-    [m, j] = min(fit2);
-    evo2(gen) = m;
+    [m1, j] = min(fit2);
+    evo2(gen) = m1;
     oldPop2 = pop2;
 
     pop2 = GeneticFcn(pop2, fit2, paramInterval);
@@ -90,22 +90,22 @@ for gen = 1:maxGen
     xlim([0 maxGen]);
     drawnow();
 
-    if gen == 15
-        W1_15 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)];
-        B1_15 = oldPop3(k,51:1:60);
-        W2_15 = [oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90); oldPop3(k,91:1:100); oldPop3(k,101:1:110);
+    if gen == 10
+        W1_10 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)];
+        B1_10 = oldPop3(k,51:1:60);
+        W2_10 = [oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90); oldPop3(k,91:1:100); oldPop3(k,101:1:110);
             oldPop3(k,111:1:120); oldPop3(k,121:1:130); oldPop3(k,131:1:140); oldPop3(k,141:1:150); oldPop3(k,151:1:160)];
-        B2_15 = oldPop3(k,161:1:170);
-        W3_15 = [oldPop3(k,171:1:180)' oldPop3(k,181:1:190)'];
+        B2_10 = oldPop3(k,161:1:170);
+        W3_10 = [oldPop3(k,171:1:180)' oldPop3(k,181:1:190)'];
     end
 
-    if gen == 50 
-        W1_50 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)];
-        B1_50 = oldPop3(k,51:1:60);
-        W2_50 = [oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90); oldPop3(k,91:1:100); oldPop3(k,101:1:110);
+    if gen == 30 
+        W1_30 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)];
+        B1_30 = oldPop3(k,51:1:60);
+        W2_30 = [oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90); oldPop3(k,91:1:100); oldPop3(k,101:1:110);
             oldPop3(k,111:1:120); oldPop3(k,121:1:130); oldPop3(k,131:1:140); oldPop3(k,141:1:150); oldPop3(k,151:1:160)];
-        B2_50 = oldPop3(k,161:1:170);
-        W3_50 = [oldPop3(k,171:1:180)' oldPop3(k,181:1:190)'];
+        B2_30 = oldPop3(k,161:1:170);
+        W3_30 = [oldPop3(k,171:1:180)' oldPop3(k,181:1:190)'];
     end
 
 end
@@ -128,6 +128,7 @@ uloz.bestPop = bestPop;
 uloz.bestFit = bestFit;
 filename = 'LatestSpecimen.mat';
 save(filename, '-struct', 'uloz');
+disp("SAVENI SI FIGURU !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 clf;
 hold on;

@@ -1,9 +1,9 @@
 %% Environment & road creation
-map_S;
+% map_original;
 
 %% Radars
 sensorLength = 20;
-sensorFov = 5*pi/10;
+sensorFov = pi/4;
 
 %% Car
 v1 = vehicle(scenario, 'ClassID',1', 'Position',[0 0 0], 'Velocity',[0.1 -0.5 0], 'Yaw',0);
