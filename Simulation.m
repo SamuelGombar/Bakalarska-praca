@@ -41,7 +41,7 @@ for mapy = 1:3
     
     %% Radars
     sensorLength = 20;
-    sensorFov = pi/4;
+    sensorFov = pi/2;
     
     %% Car
     L = 4.7;
@@ -79,11 +79,19 @@ for mapy = 1:3
     calpha3 = 0;
     calpha4 = 0;
     calpha5 = 0;
-    alpharray1 = [];
-    alpharray2 = [];
-    alpharray3 = [];
-    alpharray4 = [];
-    alpharray5 = [];
+%     calpha6 = 0;
+%     calpha7 = 0;
+%     calpha8 = 0;
+%     calpha9 = 0;
+    alpharray1 = [3 3 3 3 3 3 3 3 3 3];
+    alpharray2 = [3 3 3 3 3 3 3 3 3 3];
+    alpharray3 = [3 3 3 3 3 3 3 3 3 3];
+    alpharray4 = [3 3 3 3 3 3 3 3 3 3];
+    alpharray5 = [3 3 3 3 3 3 3 3 3 3];
+%     alpharray6 = [3 3 3 3 3 3 3 3 3 3];
+%     alpharray7 = [3 3 3 3 3 3 3 3 3 3];
+%     alpharray8 = [3 3 3 3 3 3 3 3 3 3];
+%     alpharray9 = [3 3 3 3 3 3 3 3 3 3];
     
     W1 = bestW1;
     B1 = bestB1;
@@ -127,16 +135,40 @@ for mapy = 1:3
             v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/2+theta)];
         tipOfSensor5 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(theta)...
         v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(theta)];
-        
+
+%         tipOfSensor6 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(3*sensorFov/8+theta)...
+%             v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(3*sensorFov/8+theta)];
+%         tipOfSensor7 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(sensorFov/8+theta)...
+%             v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(sensorFov/8+theta)];
+%         tipOfSensor8 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-3*sensorFov/8+theta)...
+%             v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-3*sensorFov/8+theta)];
+%         tipOfSensor9 = [v1.Position(1) + 1.175*cos(theta) + sensorLength*cos(-sensorFov/8+theta)...
+%             v1.Position(2) + 1.175*sin(theta) + sensorLength*sin(-sensorFov/8+theta)];      
     
+%         alpha = [0 0 0 0 0 0 0 0 0];
+%         beta = [0 0 0 0 0 0 0 0 0];
+%         x = [0 0 0 0 0 0 0 0 0];
         alpha = [0 0 0 0 0];
         beta = [0 0 0 0 0];
         x = [0 0 0 0 0];
-        alpharray1 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray2 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray3 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray4 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray5 = [0 0 0 0 0 0 0 0 0 0];
+        calpha1 = 0;
+        calpha2 = 0;
+        calpha3 = 0;
+        calpha4 = 0;
+        calpha5 = 0;
+%         calpha6 = 0;
+%         calpha7 = 0;
+%         calpha8 = 0;
+%         calpha9 = 0;
+        alpharray1 = [3 3 3 3 3 3 3 3 3 3];
+        alpharray2 = [3 3 3 3 3 3 3 3 3 3];
+        alpharray3 = [3 3 3 3 3 3 3 3 3 3];
+        alpharray4 = [3 3 3 3 3 3 3 3 3 3];
+        alpharray5 = [3 3 3 3 3 3 3 3 3 3];
+%         alpharray6 = [3 3 3 3 3 3 3 3 3 3];
+%         alpharray7 = [3 3 3 3 3 3 3 3 3 3];
+%         alpharray8 = [3 3 3 3 3 3 3 3 3 3];
+%         alpharray9 = [3 3 3 3 3 3 3 3 3 3];
         for i = 1:size(outerBoundary)
             %% Sensors
             p1 = frontAxle(1);
@@ -165,6 +197,18 @@ for mapy = 1:3
     
             p18 = tipOfSensor5(1);
             q18 = tipOfSensor5(2);
+
+%             p22 = tipOfSensor6(1);
+%             q22 = tipOfSensor6(2);
+%            
+%             p26 = tipOfSensor7(1);
+%             q26 = tipOfSensor7(2);
+%             
+%             p30 = tipOfSensor8(1);
+%             q30 = tipOfSensor8(2);
+%             
+%             p34 = tipOfSensor9(1);
+%             q34 = tipOfSensor9(2);
     
             n1 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
             b1 = (p4-p3)*(q2-q1)-(q4-q3)*(p2-p1);
@@ -220,6 +264,50 @@ for mapy = 1:3
                 alpharray5(calpha5) = 6*alpha(5)-3;
 
             end
+
+%             n6 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
+%             b6 = (p4-p3)*(q22-q1)-(q4-q3)*(p22-p1);
+%             c6 = (p22-p1)*(q3-q1)-(q22-q1)*(p3-p1);
+%             alpha(6) = n6/b6;
+%             beta(6) = c6/b6;
+%             if (alpha(6) >= 0 && alpha(6) <= 1) && (beta(6) >= 0 && beta(6) <= 1)
+%                 calpha6 = calpha6 + 1;
+%                 alpharray6(calpha6) = 6*alpha(6)-3;
+% 
+%             end
+% 
+%             n7 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
+%             b7 = (p4-p3)*(q26-q1)-(q4-q3)*(p26-p1);
+%             c7 = (p26-p1)*(q3-q1)-(q26-q1)*(p3-p1);
+%             alpha(7) = n7/b7;
+%             beta(7) = c7/b7;
+%             if (alpha(7) >= 0 && alpha(7) <= 1) && (beta(7) >= 0 && beta(7) <= 1)
+%                 calpha7 = calpha7 + 1;
+%                 alpharray7(calpha7) = 6*alpha(7)-3;
+% 
+%             end
+% 
+%             n8 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
+%             b8 = (p4-p3)*(q30-q1)-(q4-q3)*(p30-p1);
+%             c8 = (p30-p1)*(q3-q1)-(q30-q1)*(p3-p1);
+%             alpha(8) = n8/b8;
+%             beta(8) = c8/b8;
+%             if (alpha(8) >= 0 && alpha(8) <= 1) && (beta(8) >= 0 && beta(8) <= 1)
+%                 calpha8 = calpha8 + 1;
+%                 alpharray8(calpha8) = 6*alpha(8)-3;
+% 
+%             end
+% 
+%             n9 = (p4-p3)*(q3-q1)-(q4-q3)*(p3-p1);
+%             b9 = (p4-p3)*(q34-q1)-(q4-q3)*(p34-p1);
+%             c9 = (p34-p1)*(q3-q1)-(q34-q1)*(p3-p1);
+%             alpha(9) = n9/b9;
+%             beta(9) = c9/b9;
+%             if (alpha(9) >= 0 && alpha(9) <= 1) && (beta(9) >= 0 && beta(9) <= 1)
+%                 calpha9 = calpha9 + 1;
+%                 alpharray9(calpha9) = 6*alpha(9)-3;
+% 
+%             end
     
             %collision
             xA = v1.Position(1) - cos(theta);
@@ -228,11 +316,11 @@ for mapy = 1:3
             yB = v1.Position(2) + 1.175*sin(theta);
             A = [xA yA];
             B = [xB yB];
-            n6 = (p4-p3)*(q3-yA)-(q4-q3)*(p3-xA);
-            b6 = (p4-p3)*(yB-yA)-(q4-q3)*(xB-xA);
-            c6 = (xB-xA)*(q3-yA)-(yB-yA)*(p3-xA);
-            alfa = n6/b6;
-            betta = c6/b6;
+            np = (p4-p3)*(q3-yA)-(q4-q3)*(p3-xA);
+            bp = (p4-p3)*(yB-yA)-(q4-q3)*(xB-xA);
+            cp = (xB-xA)*(q3-yA)-(yB-yA)*(p3-xA);
+            alfa = np/bp;
+            betta = cp/bp;
             if (alfa >= 0 && alfa <= 1) && (betta >= 0 && betta <= 1)
                 disp("TU SOM NARAZIL POZDLZ NA DLZKU")
                 isCollision = true;
@@ -244,11 +332,11 @@ for mapy = 1:3
             yB1 = v1.Position(2) - cos(theta) + 1.175*sin(theta);
             D1 = [xA1 yA1];
             E1 = [xB1 yB1];
-            n7 = (p4-p3)*(q3-yA1)-(q4-q3)*(p3-xA1);
-            b7 = (p4-p3)*(yB1-yA1)-(q4-q3)*(xB1-xA1);
-            c7 = (xB1-xA1)*(q3-yA1)-(yB1-yA1)*(p3-xA1);
-            alfa1 = n7/b7;
-            betta1 = c7/b7;
+            nk = (p4-p3)*(q3-yA1)-(q4-q3)*(p3-xA1);
+            bk = (p4-p3)*(yB1-yA1)-(q4-q3)*(xB1-xA1);
+            ck = (xB1-xA1)*(q3-yA1)-(yB1-yA1)*(p3-xA1);
+            alfa1 = nk/bk;
+            betta1 = ck/bk;
             if (alfa1 >= 0 && alfa1 <= 1) && (betta1 >= 0 && betta1 <= 1)
                 disp("TU SOM NARAZIL KOLMO NA DLZKU")
                 isCollision = true;
@@ -263,18 +351,11 @@ for mapy = 1:3
         x(2) = min(alpharray2);
         x(3) = min(alpharray3);
         x(4) = min(alpharray4);
-        x(5) = min(alpharray5);
-        calpha1 = 0;
-        calpha2 = 0;
-        calpha3 = 0;
-        calpha4 = 0;
-        calpha5 = 0;
-        alpharray1 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray2 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray3 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray4 = [0 0 0 0 0 0 0 0 0 0];
-        alpharray5 = [0 0 0 0 0 0 0 0 0 0];
-        
+        x(5) = min(alpharray5); 
+%         x(6) = min(alpharray6); 
+%         x(7) = min(alpharray7); 
+%         x(8) = min(alpharray8); 
+%         x(9) = min(alpharray9);   
     
         %checkpoints
         [sizeBoundary, ~] = size(outerBoundary); 
@@ -301,12 +382,21 @@ for mapy = 1:3
         h3 = plot([frontAxle(1) tipOfSensor3(1)], [frontAxle(2) tipOfSensor3(2)], 'LineWidth', 0.5, 'Color', 'red');
         h4 = plot([frontAxle(1) tipOfSensor4(1)], [frontAxle(2) tipOfSensor4(2)], 'LineWidth', 0.5, 'Color', 'red');
         h5 = plot([frontAxle(1) tipOfSensor5(1)], [frontAxle(2) tipOfSensor5(2)], 'LineWidth', 0.5, 'Color', 'red');
+%         h6 = plot([frontAxle(1) tipOfSensor6(1)], [frontAxle(2) tipOfSensor6(2)], 'LineWidth', 0.5, 'Color', 'red');
+%         h7 = plot([frontAxle(1) tipOfSensor7(1)], [frontAxle(2) tipOfSensor7(2)], 'LineWidth', 0.5, 'Color', 'red');
+%         h8 = plot([frontAxle(1) tipOfSensor8(1)], [frontAxle(2) tipOfSensor8(2)], 'LineWidth', 0.5, 'Color', 'red');
+%         h9 = plot([frontAxle(1) tipOfSensor9(1)], [frontAxle(2) tipOfSensor9(2)], 'LineWidth', 0.5, 'Color', 'red');
         pause(0.02);
         delete(h1);
         delete(h2);
         delete(h3);
         delete(h4);
         delete(h5);
+%         delete(h6);
+%         delete(h7);
+%         delete(h8);
+%         delete(h9);
+        x
     
         a1 = (x*W1)+B1;
         z1 = tanh(a1);
@@ -316,8 +406,13 @@ for mapy = 1:3
         z3 = tanh(a3);
         incrementd = z3(1)/10;
     
-    %     incrementv = z3(2)/10;
         incrementv = z3(2)*dF/m;
+%         a1 = (x*W1)+B1;
+%         z1 = tanh(a1);
+%         a2 = (z1*W2);
+%         z2 = tanh(a2);
+%         incrementd = z2(1)/10;
+%         incrementv = z2(2)*dF/m;
     
         Incrementd(programStep) = abs(incrementd);
     
@@ -336,14 +431,13 @@ for mapy = 1:3
         d = d + incrementd;
         v = v + incrementv;
         
-%         fit4 = fit4 + abs(d*2);
         %% FIT & FINISH
         V(programStep) = v;
         if (isCollision) 
                     disp("TU")
             break
         end
-        if (programStep > 2000) 
+        if (programStep > 1500) 
             break
         end
     

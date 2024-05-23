@@ -1,9 +1,8 @@
 %% Environment & road creation
-% map_original;
 
 %% Radars
 sensorLength = 20;
-sensorFov = pi/4;
+sensorFov = pi/2;
 
 %% Car
 v1 = vehicle(scenario, 'ClassID',1', 'Position',[0 0 0], 'Velocity',[0.1 -0.5 0], 'Yaw',0);
@@ -34,8 +33,16 @@ calpha2 = 0;
 calpha3 = 0;
 calpha4 = 0;
 calpha5 = 0;
+calpha6 = 0;
+calpha7 = 0;
+calpha8 = 0;
+calpha9 = 0;
 alpharray1 = [];
 alpharray2 = [];
 alpharray3 = [];
 alpharray4 = [];
 alpharray5 = [];
+alpharray6 = [];
+alpharray7 = [];
+alpharray8 = [];
+alpharray9 = [];

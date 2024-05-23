@@ -7,7 +7,6 @@ function pop = GeneticFcn(pop, fit, paramInterval)
     sus = selsus(pop, fit, 16);
     work1 = seltourn(pop, fit, 15);
     work2 = crossov([sus; work1], 2, 0);
-%     bestPop = crossov(bestPop, 2, 0);
     pop = [rand; bestPop; work2];
     pop = mutx(pop, 0.06, paramInterval);
     pop = muta(pop, 0.15, amp, paramInterval);
