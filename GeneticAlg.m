@@ -4,11 +4,15 @@ clear;
 clc;
 % load LatestSpecimen.mat;
 exists = false;
+luce9 = true;
 
 maxGen = 50;
 popSize = 50;
-% numberOfGenes = 190;
-numberOfGenes = 230;
+if luce9
+    numberOfGenes = 230;
+else
+    numberOfGenes = 190;
+end
 % numberOfGenes = 80;
 paramInterval = [ones(1,numberOfGenes)*-3; ones(1,numberOfGenes)*3];
 
@@ -112,23 +116,24 @@ for gen = 1:maxGen
 
 end
 
-%% 2 vrstvy
-% bestW1 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)];
-% bestB1 = oldPop3(k,51:1:60);
-% bestW2 = [oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90); oldPop3(k,91:1:100); oldPop3(k,101:1:110);
-%     oldPop3(k,111:1:120); oldPop3(k,121:1:130); oldPop3(k,131:1:140); oldPop3(k,141:1:150); oldPop3(k,151:1:160)];
-% bestB2 = oldPop3(k,161:1:170);
-% bestW3 = [oldPop3(k,171:1:180)' oldPop3(k,181:1:190)'];
-
 %% 2 vrstvy 9 lucov
-bestW1 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)
-            oldPop3(k,51:1:60); oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90)];
-bestB1 = oldPop3(k,91:1:100);
-bestW2 = [oldPop3(k,101:1:110); oldPop3(k,111:1:120); oldPop3(k,121:1:130); oldPop3(k,131:1:140); oldPop3(k,141:1:150);
-    oldPop3(k,151:1:160); oldPop3(k,161:1:170); oldPop3(k,171:1:180); oldPop3(k,181:1:190); oldPop3(k,191:1:200)];
-bestB2 = oldPop3(k,201:1:210);
-bestW3 = [oldPop3(k,211:1:220)' oldPop3(k,221:1:230)'];
-
+if luce9
+    bestW1 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)
+                oldPop3(k,51:1:60); oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90)];
+    bestB1 = oldPop3(k,91:1:100);
+    bestW2 = [oldPop3(k,101:1:110); oldPop3(k,111:1:120); oldPop3(k,121:1:130); oldPop3(k,131:1:140); oldPop3(k,141:1:150);
+        oldPop3(k,151:1:160); oldPop3(k,161:1:170); oldPop3(k,171:1:180); oldPop3(k,181:1:190); oldPop3(k,191:1:200)];
+    bestB2 = oldPop3(k,201:1:210);
+    bestW3 = [oldPop3(k,211:1:220)' oldPop3(k,221:1:230)'];
+else
+%% 2 vrstvy
+    bestW1 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)];
+    bestB1 = oldPop3(k,51:1:60);
+    bestW2 = [oldPop3(k,61:1:70); oldPop3(k,71:1:80); oldPop3(k,81:1:90); oldPop3(k,91:1:100); oldPop3(k,101:1:110);
+        oldPop3(k,111:1:120); oldPop3(k,121:1:130); oldPop3(k,131:1:140); oldPop3(k,141:1:150); oldPop3(k,151:1:160)];
+    bestB2 = oldPop3(k,161:1:170);
+    bestW3 = [oldPop3(k,171:1:180)' oldPop3(k,181:1:190)'];
+end
 %% jedna vrstva 5 lucov
 % bestW1 = [oldPop3(k,1:1:10); oldPop3(k,11:1:20); oldPop3(k,21:1:30); oldPop3(k,31:1:40); oldPop3(k, 41:1:50)];
 % bestB1 = oldPop3(k,51:1:60);
